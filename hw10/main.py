@@ -45,8 +45,8 @@ class LogisticMap(Chaos):
         return self.state
 
 
-o = LogisticMap(2, 0.1)
-print(o.next(), o.next(), o.next())
+# o = LogisticMap(2, 0.1)
+# print(o.next(), o.next(), o.next())
 
 
 # Task 3.3
@@ -72,7 +72,6 @@ for mu in [2, 3.2, 3.5, 3.55]:
     pass
     # visualize(LogisticMap(mu, 0.1), mu)
 
-
 # Task 3.4
 # μArray = []
 # xArray = []
@@ -95,14 +94,77 @@ for mu in [2, 3.2, 3.5, 3.55]:
 
 
 # Task 5.1
-def documentation(samplee):
-    for name, data in inspect.getmembers(samplee):
-        if name.startswith('__'):
-            continue
-
-        print(data.__doc__)
-        documentation(data)
+all_fields = set()
 
 
-print(str(inspect.getsource(sample.A.meth1)))
-documentation(sample)
+def documentation(module, isClass=False, inner_class=None):
+    if not all_fields.__contains__(module):
+        module = __import__(module)
+        print('# Модуль ' + inspect.getmodulename(str(module)[str(module).find('from') + 6:-2]) + '\n')
+        print(str(module.__doc__).strip() + '\n')
+        all_fields.add(module)
+    if isClass:
+        for object in inspect.getmembers(inner_class, inspect.isfunction):
+            name, value = object
+            if not name.startswith('__') and not all_fields.__contains__(value):
+                title_func = str(inspect.getsource(value)).split('\n')[0].strip()
+                title_func = title_func[title_func.find('def') + 4: -1]
+                print('**Метод** \'' + title_func + '\'\n')
+                print(str(value.__doc__).strip() + '\n')
+                all_fields.add(value)
+    for object in inspect.getmembers(module):
+        name, value = object
+        if inspect.isclass(value) and not all_fields.__contains__(value):
+            print('## Класс ' + name + '\n')
+            print(str(value.__doc__).strip() + '\n')
+            all_fields.add(value)
+            documentation(module, isClass=True, inner_class=value)
+        if inspect.isfunction(value) and not all_fields.__contains__(value):
+            print('## Функция: ' + name + '\n')
+            title_func = str(inspect.getsource(value)).split('\n')[0].strip()
+            title_func = title_func[title_func.find('def') + 4:-1]
+            print('Сигнатура: \'' + title_func + '\'\n')
+            print(str(value.__doc__).strip() + '\n')
+            all_fields.add(value)
+
+
+# documentation('sample')
+
+
+# Task 5.2
+from pathlib import Path
+
+all_paths = set()
+
+
+def draw_ierarchie(path):
+    if str(path).endswith('.py') and not all_paths.__contains__(str(path)):
+        all_paths.add(str(path))
+        return True
+    if path.is_dir():
+        for x in path.rglob("*"):
+            if not str(x).__contains__('venv') and not str(x).__contains__('.git') and not str(x).__contains__(
+                    '.idea') and not str(x).endswith('__'):
+                if draw_ierarchie(x) == True and not x.is_dir():
+                    x = str(x)
+                    a = x[:x.rfind('\\')]
+                    x = x[a.rfind('\\') + 1:]
+                    x = x.replace('\\','/')
+                    dot.edge(str(path)[str(path).rfind('\\') + 1:], x)
+                elif x.is_dir() and not all_paths.__contains__(str(x)):
+                    all_paths.add(str(x))
+                    dot.edge(str(path)[str(path).rfind('\\') + 1:], str(x)[str(x).rfind('\\') + 1:])
+    return False
+
+
+p = Path("D:/Programming/PythonProjects/ProgrammingOnPython")
+draw_ierarchie(p)
+dot.render('graph_draw.gv')
+
+p = str(Path("D:/Programming/PythonProjects/ProgrammingOnPython/hw10/main.py"))
+a = p[:p.rfind('\\')]
+p = p[a.rfind('\\') + 1:]
+print(p)
+# for x in p.rglob("*"):
+#      if not str(x).__contains__('venv'):
+#          print(x)
