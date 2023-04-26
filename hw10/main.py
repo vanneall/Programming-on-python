@@ -157,14 +157,12 @@ def draw_ierarchie(path):
     return False
 
 
-p = Path("D:/Programming/PythonProjects/ProgrammingOnPython")
-draw_ierarchie(p)
-dot.render('graph_draw.gv')
+#p = Path("D:/Programming/PythonProjects/ProgrammingOnPython")
+#draw_ierarchie(p)
+#dot.render('graph_draw.gv')
 
-p = str(Path("D:/Programming/PythonProjects/ProgrammingOnPython/hw10/main.py"))
-a = p[:p.rfind('\\')]
-p = p[a.rfind('\\') + 1:]
-print(p)
-# for x in p.rglob("*"):
-#      if not str(x).__contains__('venv'):
-#          print(x)
+p = Path("C:/")
+for x in p.rglob("*"):
+    if str(x).__contains__('Visual Paradigm'):
+        print(x)
+print('КОНЕЦ')
